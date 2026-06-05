@@ -124,10 +124,43 @@ PROTECTED_TARGETING_PATTERNS = [
 ]
 
 SAFE_REPLY = (
-    "The dossier got too sharp and was thrown into the stove. "
-    "Please accept this harmless verdict: your chaos has excellent posture."
+    "The dossier hissed, smoked, and refused to punch down. "
+    "Final harmless verdict: your chaos has excellent posture and a suspicious little hat."
 )
-SAFE_ADVICE = "Make the next useful move before decorating the excuse."
+SAFE_ADVICE = "Make the next useful move before you decorate the excuse."
+
+PRESET_DOSSIERS = [
+    {
+        "button": "Mira - coffee-built UI oracle",
+        "values": (
+            "Mira",
+            "I overbuild side projects, drink too much coffee, and love weird UI.",
+            "Back-Alley Oracle",
+            3,
+            True,
+        ),
+    },
+    {
+        "button": "Alex - label-system dungeon clerk",
+        "values": (
+            "Alex",
+            "I start productivity systems and then reorganize the labels forever.",
+            "Dungeon Intern",
+            4,
+            True,
+        ),
+    },
+    {
+        "button": "Sam - tiny-game screenshot boss",
+        "values": (
+            "Sam",
+            "I make tiny games, forget lunch, and name variables like ancient spells.",
+            "Meme Caporegime",
+            2,
+            False,
+        ),
+    },
+]
 
 
 def stable_int(*parts: str) -> int:
@@ -181,15 +214,16 @@ You are Trollsona, a theatrical troll alter-ego generator.
 Track: {TRACK_NAME}.
 
 Your job is to transform the user's self-description into a funny, slightly grotesque,
-whimsical troll persona. The voice should feel like a back-alley fortune teller, a petty
-little menace, and a lightly unhinged italo-american cousin all took turns writing the
-same dossier.
+whimsical troll persona. Make it feel like a stained-paper character dossier that was
+dictated by a back-alley fortune teller, stamped by a petty clerk, and lightly heckled
+by an italo-american cousin who has opinions but not cruelty.
 
 Return only valid minified JSON with these fields:
 trollsona_name, troll_reply, useful_advice, cringe_score, cringe_score_label.
 
 Objective:
 - Make the result absurd, memorable, specific, and theatrical.
+- Make trollsona_name sound like a summoned character, not a username.
 - Keep it roasty, not hateful.
 - Keep the humor sharp but warm: playful sting, never humiliation.
 
@@ -198,7 +232,8 @@ Style rules:
 - Use occasional light italo-american flavor, but sparingly.
 - Good flavor examples: "listen, paisan", "madone", "capisce".
 - Do not overuse slang or turn the voice into a caricature.
-- Use grotesque but charming imagery.
+- Use grotesque but charming imagery: candle wax, receipts, tiny crowns, haunted binders,
+  dented carts, snack dust, side quests, suspicious paperwork.
 - No generic roast bot voice.
 - No generic assistant copy, no filler, no disclaimers, no moralizing.
 - troll_reply must be the strongest comedic line, 1-3 short sentences max.
@@ -242,14 +277,14 @@ def fallback_trollsona(
 ) -> dict[str, Any]:
     style = PERSONA_STYLES.get(persona, PERSONA_STYLES["Forest Heckler"])
     seed = stable_int(user_name.lower(), profile.lower(), persona.lower(), str(spice))
-    adjectives = ["Velvet", "Cryptic", "Ashen", "Brass", "Crooked", "Sainted", "Static"]
+    adjectives = ["Velvet", "Candle", "Ashen", "Brass", "Crooked", "Sainted", "Static"]
     titles = [
-        "Overthinker",
-        "Snack Baron",
-        "Dossier Rat",
-        "Chaos Clerk",
+        "Overthinker in Residence",
+        "Snack Baron of Almost",
+        "Dossier Clerk",
+        "Chaos Notary",
         "Sidequest Duke",
-        "Patron Saint of Almost",
+        "Patron Saint of Later",
     ]
     noun = style["noun_pool"][seed % len(style["noun_pool"])]
     adjective = adjectives[(seed // 7) % len(adjectives)]
@@ -260,18 +295,18 @@ def fallback_trollsona(
     trollsona_name = f"{name_prefix} {noun}-{title}"
 
     roast_templates = [
-        "Listen, paisan, you have the energy of a side quest that opened twelve tabs and called it destiny.",
-        "Your aura says main character, but your calendar is dressed like an optional tutorial with rent due.",
-        "You are one dramatic cape away from turning a small errand into municipal folklore.",
-        "Your brain is a tiny tavern where every idea wants a theme song and a separate invoice.",
-        "Madone, you radiate the confidence of someone charging a bridge toll in vibes.",
-        "You got the vibe of a person who alphabetizes chaos and then loses the alphabet.",
+        "Listen, paisan: your vibe is a candlelit side quest that opened twelve tabs, found a tiny crown, and called it destiny.",
+        "Your aura says main character, but your calendar is dressed like a haunted binder asking for rent.",
+        "You are one dramatic cape away from turning a normal errand into a village ordinance.",
+        "Your brain is a basement tavern where every idea demands a theme song, a snack bowl, and a separate invoice.",
+        "Madone, you carry the confidence of a bridge troll charging tolls in vibes and loose receipts.",
+        "You alphabetize chaos, misplace the alphabet, then file a complaint with the moon.",
     ]
     advice_templates = [
         "Pick one task, make it smaller, and finish that version before you rename the kingdom.",
         "Write the next concrete step in one sentence, then do only that step. Capisce?",
         "Keep the weird idea, but give it a deadline and a visible done state.",
-        "Trade one dramatic plan for one shipped artifact today.",
+        "Trade one dramatic plan for one shipped artifact before the candles burn out.",
         "Use the chaos as seasoning, not as project management.",
     ]
 
@@ -287,6 +322,7 @@ def fallback_trollsona(
         "useful_advice": advice,
         "cringe_score": score,
         "cringe_score_label": cringe_label(score),
+        "include_advice": include_advice,
         "source": "deterministic_fallback",
         "fallback_reason": reason,
     }
@@ -365,7 +401,7 @@ def generate_with_model(prompt: str) -> tuple[str | None, str]:
         return None, f"model generation failed: {type(exc).__name__}: {exc}"
 
 
-def parse_model_output(raw_text: str, score: int) -> dict[str, Any] | None:
+def parse_model_output(raw_text: str, score: int, include_advice: bool) -> dict[str, Any] | None:
     decoder = json.JSONDecoder()
     parsed = None
     for match in re.finditer(r"\{", raw_text or ""):
@@ -390,6 +426,7 @@ def parse_model_output(raw_text: str, score: int) -> dict[str, Any] | None:
         "useful_advice": clean_text(parsed["useful_advice"], 280),
         "cringe_score": score,
         "cringe_score_label": clean_text(parsed["cringe_score_label"], 80),
+        "include_advice": include_advice,
         "source": "transformers_model",
         "fallback_reason": "",
     }
@@ -430,16 +467,26 @@ def safety_guard(result: dict[str, Any], fallback: dict[str, Any]) -> dict[str, 
 def render_card(result: dict[str, Any]) -> str:
     esc = {key: html.escape(str(value)) for key, value in result.items()}
     score = max(0, min(100, int(result.get("cringe_score", 0))))
+    useful_advice = clean_text(result.get("useful_advice", ""), 280)
+    show_advice = bool(result.get("include_advice", True)) and bool(useful_advice)
+    advice_tile = (
+        f"""
+    <div class="trollsona-tile">
+      <div class="trollsona-label">A USEFUL SLAP</div>
+      <div class="trollsona-value">{html.escape(useful_advice)}</div>
+    </div>
+""".rstrip()
+        if show_advice
+        else ""
+    )
+    grid_class = "trollsona-grid" if show_advice else "trollsona-grid trollsona-grid-single"
     return f"""
 <div class="trollsona-card">
   <div class="dossier-kicker">THE SUMMONED MENACE</div>
   <h2>{esc["trollsona_name"]}</h2>
   <div class="trollsona-mainline">{esc["troll_reply"]}</div>
-  <div class="trollsona-grid">
-    <div class="trollsona-tile">
-      <div class="trollsona-label">A USEFUL SLAP</div>
-      <div class="trollsona-value">{esc["useful_advice"]}</div>
-    </div>
+  <div class="{grid_class}">
+{advice_tile}
     <div class="trollsona-tile">
       <div class="trollsona-label">GOBLIN METER</div>
       <div class="meter-shell" aria-label="Goblin meter {score} out of 100">
@@ -467,10 +514,14 @@ def render_empty_card() -> str:
     return """
 <div class="empty-dossier">
   <div class="dossier-kicker">The dossier is sealed</div>
-  <h2>No troll has been summoned yet.</h2>
+  <h2>No menace has signed the paperwork yet.</h2>
   <p>Feed the booth a little lore, pick a resident menace, and pull the handle.</p>
 </div>
 """.strip()
+
+
+def load_preset(index: int) -> tuple[str, str, str, int, bool]:
+    return PRESET_DOSSIERS[index]["values"]
 
 
 def generate_trollsona(
@@ -501,7 +552,7 @@ def generate_trollsona(
 
     result = None
     if raw_text:
-        result = parse_model_output(raw_text, score)
+        result = parse_model_output(raw_text, score, include_advice)
         if result is None:
             result = repair_model_output(raw_text, fallback)
 
@@ -586,32 +637,19 @@ def build_demo() -> Any:
         )
 
         with gr.Accordion("Stolen dossiers", open=False):
-            gr.Examples(
-                examples=[
-                    [
-                        "Mira",
-                        "I overbuild side projects, drink too much coffee, and love weird UI.",
-                        "Back-Alley Oracle",
-                        3,
-                        True,
-                    ],
-                    [
-                        "Alex",
-                        "I start productivity systems and then reorganize the labels forever.",
-                        "Dungeon Intern",
-                        4,
-                        True,
-                    ],
-                    [
-                        "Sam",
-                        "I make tiny games, forget lunch, and name variables like ancient spells.",
-                        "Meme Caporegime",
-                        2,
-                        False,
-                    ],
-                ],
-                inputs=[user_name, profile, persona, spice, include_advice],
-            )
+            gr.HTML('<div class="preset-note">Tap a stolen dossier to pre-fill the booth.</div>')
+            with gr.Row(elem_classes=["preset-row"]):
+                for preset_index, preset in enumerate(PRESET_DOSSIERS):
+                    preset_button = gr.Button(
+                        preset["button"],
+                        variant="secondary",
+                        elem_classes=["preset-card"],
+                    )
+                    preset_button.click(
+                        fn=lambda index=preset_index: load_preset(index),
+                        inputs=[],
+                        outputs=[user_name, profile, persona, spice, include_advice],
+                    )
 
     return demo
 
