@@ -1,0 +1,372 @@
+:root {
+  --ink: #130f0c;
+  --coal: #1d1712;
+  --coal-soft: #2b2118;
+  --parchment: #efe0bf;
+  --paper: #f8edcf;
+  --paper-deep: #d7bd86;
+  --brass: #c68633;
+  --ember: #b44a24;
+  --olive: #55633f;
+  --bone: #fff7df;
+  --muted: #bda985;
+}
+
+body,
+.gradio-container {
+  background: var(--ink) !important;
+  color: var(--bone) !important;
+}
+
+.gradio-container {
+  max-width: 1120px !important;
+  min-height: 100vh;
+  padding: 24px !important;
+  --body-background-fill: var(--ink);
+  --body-text-color: var(--bone);
+  --background-fill-primary: var(--coal);
+  --background-fill-secondary: var(--coal-soft);
+  --border-color-primary: rgba(215, 189, 134, 0.34);
+  --block-background-fill: var(--coal-soft);
+  --block-border-color: rgba(215, 189, 134, 0.34);
+  --block-label-background-fill: transparent;
+  --block-label-border-color: transparent;
+  --block-label-text-color: var(--paper);
+  --block-info-text-color: var(--muted);
+  --input-background-fill: #251d15;
+  --input-border-color: rgba(215, 189, 134, 0.48);
+  --input-placeholder-color: rgba(255, 247, 223, 0.52);
+  --body-text-color-subdued: var(--muted);
+  --button-primary-background-fill: var(--ember);
+  --button-primary-background-fill-hover: #c9572b;
+  --button-primary-text-color: var(--bone);
+  --button-secondary-background-fill: var(--coal-soft);
+  --button-secondary-background-fill-hover: #35291e;
+  --button-secondary-text-color: var(--paper);
+}
+
+.ritual-hero {
+  border: 1px solid rgba(198, 134, 51, 0.45);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(29, 23, 18, 0.98), rgba(43, 33, 24, 0.98)),
+    repeating-linear-gradient(90deg, rgba(255, 247, 223, 0.04) 0, rgba(255, 247, 223, 0.04) 1px, transparent 1px, transparent 9px);
+  padding: 28px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+}
+
+.hero-mark,
+.dossier-kicker,
+.panel-heading,
+.trollsona-label {
+  color: var(--brass);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.ritual-hero h1 {
+  color: var(--bone);
+  font-size: 3rem;
+  line-height: 1;
+  margin: 10px 0 8px;
+}
+
+.ritual-hero p {
+  color: var(--paper);
+  font-size: 1.12rem;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 620px;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.badge-row span {
+  border: 1px solid rgba(198, 134, 51, 0.48);
+  border-radius: 999px;
+  background: rgba(85, 99, 63, 0.28);
+  color: var(--paper);
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.ritual-layout {
+  align-items: stretch;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.summoning-panel,
+.dossier-stage {
+  border: 1px solid rgba(215, 189, 134, 0.36);
+  border-radius: 8px;
+  background: rgba(29, 23, 18, 0.94);
+  padding: 16px;
+}
+
+.summoning-panel {
+  box-shadow: inset 0 0 0 1px rgba(255, 247, 223, 0.04);
+}
+
+.panel-heading {
+  margin: 0 0 14px;
+}
+
+.summoning-panel > *,
+.dossier-stage > * {
+  background: transparent !important;
+}
+
+.summoning-panel .block,
+.summoning-panel .form,
+.summoning-panel .gr-form,
+.summoning-panel .wrap,
+.summoning-panel .container,
+.summoning-panel .input-container,
+.summoning-panel .prose,
+.dossier-stage .block,
+.dossier-stage .form,
+.dossier-stage .wrap,
+.dossier-stage .container,
+.dossier-stage .input-container {
+  border-color: rgba(215, 189, 134, 0.36) !important;
+  background: var(--coal-soft) !important;
+  color: var(--bone) !important;
+}
+
+.summoning-panel label,
+.summoning-panel .label-wrap,
+.summoning-panel [data-testid="block-label"],
+.summoning-panel [data-testid="block-info"],
+.summoning-panel span,
+.dossier-stage label,
+.dossier-stage .label-wrap,
+.dossier-stage [data-testid="block-label"] {
+  color: var(--paper) !important;
+}
+
+.summoning-panel label,
+.summoning-panel [data-testid="block-label"] {
+  font-weight: 700 !important;
+}
+
+.summoning-panel input,
+.summoning-panel textarea,
+.summoning-panel select,
+.summoning-panel [role="listbox"],
+.summoning-panel [role="combobox"],
+.summoning-panel .dropdown,
+.summoning-panel .wrap input,
+.summoning-panel .wrap textarea {
+  border-color: rgba(215, 189, 134, 0.45) !important;
+  background: #251d15 !important;
+  color: var(--bone) !important;
+  box-shadow: none !important;
+}
+
+.summoning-panel input::placeholder,
+.summoning-panel textarea::placeholder {
+  color: rgba(255, 247, 223, 0.48) !important;
+}
+
+.summoning-panel input:focus,
+.summoning-panel textarea:focus,
+.summoning-panel [role="listbox"]:focus,
+.summoning-panel [role="combobox"]:focus {
+  border-color: var(--brass) !important;
+  outline: 2px solid rgba(198, 134, 51, 0.28) !important;
+}
+
+.summoning-panel input[type="range"] {
+  accent-color: var(--ember);
+  background: transparent !important;
+}
+
+.summoning-panel input[type="number"] {
+  min-width: 62px;
+  text-align: center;
+}
+
+.summoning-panel input[type="checkbox"] {
+  accent-color: var(--ember);
+  border: 1px solid rgba(215, 189, 134, 0.55) !important;
+  background: #251d15 !important;
+}
+
+.summoning-panel input[type="checkbox"]:checked {
+  background: var(--ember) !important;
+}
+
+.summoning-panel button,
+button.primary,
+.gradio-container button.primary {
+  border: 1px solid rgba(255, 247, 223, 0.28) !important;
+  border-radius: 8px !important;
+  background: var(--ember) !important;
+  color: var(--bone) !important;
+  font-weight: 800 !important;
+  box-shadow: 0 10px 28px rgba(180, 74, 36, 0.22);
+}
+
+.summoning-panel button:hover,
+button.primary:hover,
+.gradio-container button.primary:hover {
+  background: #c9572b !important;
+}
+
+.empty-dossier,
+.trollsona-card {
+  border: 1px solid rgba(92, 65, 35, 0.45);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(248, 237, 207, 0.98), rgba(239, 224, 191, 0.98)),
+    repeating-linear-gradient(0deg, rgba(92, 65, 35, 0.06) 0, rgba(92, 65, 35, 0.06) 1px, transparent 1px, transparent 10px);
+  color: var(--coal);
+  min-height: 360px;
+  padding: 24px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+}
+
+.empty-dossier h2,
+.trollsona-card h2 {
+  color: var(--coal);
+  font-size: 2rem;
+  line-height: 1.1;
+  margin: 10px 0 14px;
+  overflow-wrap: anywhere;
+}
+
+.empty-dossier p {
+  color: #574631;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 360px;
+}
+
+.trollsona-mainline {
+  border-left: 4px solid var(--ember);
+  color: #35271b;
+  font-size: 1.08rem;
+  font-weight: 750;
+  line-height: 1.48;
+  margin: 0 0 18px;
+  padding-left: 14px;
+  overflow-wrap: anywhere;
+}
+
+.trollsona-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.trollsona-tile {
+  border: 1px solid rgba(92, 65, 35, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 247, 223, 0.64);
+  padding: 14px;
+}
+
+.trollsona-value {
+  color: #3f3020;
+  font-size: 1rem;
+  line-height: 1.42;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+}
+
+.meter-shell {
+  border: 1px solid rgba(92, 65, 35, 0.28);
+  border-radius: 999px;
+  background: rgba(29, 23, 18, 0.16);
+  height: 12px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  background: linear-gradient(90deg, var(--olive), var(--brass), var(--ember));
+  height: 100%;
+}
+
+.gradio-container details,
+.gradio-container .accordion,
+.gradio-container button[aria-expanded],
+.gradio-container button.label-wrap,
+.dossier-stage button,
+.gradio-container .secondary {
+  border-color: rgba(215, 189, 134, 0.32) !important;
+  background: rgba(29, 23, 18, 0.82) !important;
+  color: var(--paper) !important;
+}
+
+.gradio-container details summary,
+.gradio-container button[aria-expanded] span,
+.gradio-container button[aria-expanded],
+.gradio-container button.label-wrap,
+.gradio-container button.label-wrap *,
+.gradio-container button.label-wrap span {
+  color: var(--paper) !important;
+}
+
+.gradio-container button.label-wrap svg,
+.gradio-container button.label-wrap path {
+  color: var(--paper) !important;
+  fill: var(--paper) !important;
+  stroke: var(--paper) !important;
+}
+
+.gradio-container table,
+.gradio-container th,
+.gradio-container td {
+  border-color: rgba(215, 189, 134, 0.24) !important;
+  background: var(--coal-soft) !important;
+  color: var(--paper) !important;
+}
+
+.dossier-stage .prose,
+.dossier-stage .prose p,
+.dossier-stage .prose strong,
+.dossier-stage .prose code {
+  color: var(--paper) !important;
+}
+
+.dossier-stage .prose code {
+  border: 1px solid rgba(215, 189, 134, 0.26);
+  border-radius: 4px;
+  background: #251d15;
+  padding: 2px 5px;
+}
+
+.gradio-container footer {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .gradio-container {
+    padding: 14px !important;
+  }
+
+  .ritual-hero {
+    padding: 20px;
+  }
+
+  .ritual-hero h1 {
+    font-size: 2.35rem;
+  }
+
+  .empty-dossier,
+  .trollsona-card {
+    min-height: 300px;
+    padding: 18px;
+  }
+}

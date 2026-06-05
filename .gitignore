@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.gradio/
+.pytest_cache/
+.playwright-mcp/
+.codex_launch_gradio.py
+gradio.out.log
+gradio.err.log
+trollsona-*.png
