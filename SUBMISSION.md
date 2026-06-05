@@ -64,7 +64,7 @@ CTA: Try it, summon your menace, and share the dossier.
 | README repo link | inspect README | GitHub URL present | DONE |
 | Space build | Hugging Face runtime API | `stage=RUNNING`, `requested=cpu-basic` | DONE |
 | Browser test on Space | Playwright on public Space | card renders; debug source/fallback hidden until accordion opens | DONE |
-| Hosted model-backed generation | Playwright on public Space, then open `See the cursed paperwork` | `Source: transformers_model`; `Fallback note: No fallback note.` | DONE |
+| Hosted model-backed generation | Playwright on public Space, then open `See the cursed paperwork` | `Source: transformers_model`; runtime `Qwen/Qwen2.5-0.5B-Instruct` as `fallback_model` on CPU; fallback note reports primary `RthItalia/nano_compact_3b_qkvfp16` skipped because CUDA is unavailable | DONE |
 
 ## Final Ship Plan
 
