@@ -1,50 +1,61 @@
+---
+title: Trollsona
+emoji: 🧌
+colorFrom: orange
+colorTo: yellow
+sdk: gradio
+sdk_version: 5.50.0
+app_file: app.py
+pinned: false
+---
+
 # Trollsona / Your Troll Alterego
 
 **Tagline:** Summon the little menace living behind your respectable personality.
 
 **Track:** An Adventure in Thousand Token Wood
 
-Trollsona is a Gradio app designed for a Hugging Face Space. It asks for a name, a short confession, a resident menace, a sting level, and whether one useful truth should be included. It returns a theatrical dossier card with:
+**Build target:** Hugging Face Space, Gradio app, small-model constraint `<=32B`.
 
-- a trollsona name
-- a playful troll reply
-- useful advice
-- a deterministic cringe score
-- source/fallback notes hidden behind a debug accordion
+**GitHub repo:** https://github.com/rthgit/Trollsona
 
-The default runtime uses a deterministic local fallback, so the demo works without cloud APIs, secrets, or mandatory model downloads.
+**Hugging Face Space:** [DA COMPLETARE]
+
+Trollsona is a playful Gradio experience that turns a short user confession into a theatrical troll alter ego. The app returns a dossier-style result card with a trollsona name, a warm roast, one useful slap, and a deterministic goblin meter.
+
+The default runtime uses a deterministic local fallback, so the demo works without mandatory cloud APIs, secrets, or model downloads. An optional Hugging Face Transformers path is available behind an environment flag.
 
 ## Features
 
-- Gradio single-page demo UI
-- Hugging Face Space-compatible `app.py`
-- Deterministic fallback output path
-- Optional local Hugging Face Transformers model path
-- Safe roast guard for non-hateful, non-identity-targeted output
-- Persona dropdown, sting slider, useful truth checkbox
-- Theatrical HTML dossier card plus optional cursed-paperwork debug notes
+- Immersive Gradio UI for Hugging Face Spaces
+- Theatrical trollsona result card
+- Deterministic fallback generator
+- Optional local Hugging Face Transformers generation path
+- Safe roast guard for non-hateful, non-identity-targeted humor
+- Persona dropdown, sting slider, and useful-truth checkbox
+- Source/fallback notes hidden behind `See the cursed paperwork`
 
-## Model
+## Model And Runtime
 
-Default model id for the optional model path:
+Default optional model:
 
 ```text
 Qwen/Qwen2.5-3B-Instruct
 ```
 
-Model constraint:
+Constraint:
 
 ```text
-small model only, <= 32B parameters
+small model only, <=32B parameters
 ```
 
-By default, model loading is disabled to keep the demo deterministic and reliable:
+Default behavior:
 
 ```bash
 TROLLSONA_ENABLE_MODEL=0
 ```
 
-To opt into the local Transformers path:
+Optional local Transformers path:
 
 ```bash
 TROLLSONA_ENABLE_MODEL=1
@@ -57,10 +68,14 @@ If the model import, download, load, or generation fails, the app falls back to 
 - Python
 - Gradio
 - Hugging Face Spaces
-- Hugging Face Transformers, optional runtime path
+- Hugging Face Transformers, optional
 - PyTorch, optional model backend
 
-No mandatory cloud API is required.
+Required secrets:
+
+```text
+[ASSENTE]
+```
 
 ## Run Locally
 
@@ -75,19 +90,19 @@ Open:
 http://127.0.0.1:7860
 ```
 
-For the deterministic fallback path:
+Deterministic fallback:
 
 ```bash
 TROLLSONA_ENABLE_MODEL=0 python app.py
 ```
 
-For the optional local model path:
+Optional local model path:
 
 ```bash
 TROLLSONA_ENABLE_MODEL=1 python app.py
 ```
 
-## Hugging Face Space Deploy
+## Hugging Face Space
 
 Required files:
 
@@ -102,19 +117,7 @@ Space SDK:
 Gradio
 ```
 
-Secrets required:
-
-```text
-[ASSENTE]
-```
-
-Space link:
-
-```text
-[DA COMPLETARE]
-```
-
-GitHub repo:
+Space URL:
 
 ```text
 [DA COMPLETARE]
@@ -122,30 +125,41 @@ GitHub repo:
 
 ## Safety
 
-Trollsona is a roast generator, but the roast target is limited to harmless style, habits, project energy, and behavior. It avoids:
+Trollsona roasts habits, vibe, wording, overthinking, productivity rituals, internet behavior, startup energy, and harmless personal lore.
 
-- hate or protected-class targeting
+It avoids:
+
+- protected-class targeting
 - identity-based insults
-- threats
-- self-harm content
+- appearance insults
+- threats or self-harm content
 - sexual content
-- heavy personal attacks
+- profanity or slurs
+- cruelty or humiliation
 
 If generated model output fails the safety guard, the app replaces it with a safe fallback card.
 
 ## Hackathon Fit
 
 - Built as a Gradio app for Hugging Face Space
-- Fits the track: An Adventure in Thousand Token Wood
-- Uses a small optional local model path under the <=32B limit
-- Demo-friendly output: whimsical, short, structured, and shareable
-- No mandatory cloud API or secret
-- Deterministic fallback keeps the demo stable for judging
+- Fits `An Adventure in Thousand Token Wood`
+- Supports the `<=32B` small-model constraint
+- Runs without mandatory cloud APIs
+- Keeps the default demo deterministic
+- Produces short, whimsical, shareable output
+
+## Codex Track
+
+- Public GitHub repo: https://github.com/rthgit/Trollsona
+- Codex-attributed polish commit: `0428072`
+- Final documentation commit: latest Git history after this documentation pass
+- Space README repo link: present
+- Demo video: [DA COMPLETARE]
+- Social post: [DA COMPLETARE]
 
 ## Known Limits
 
 - Public Space link: [DA COMPLETARE]
-- Public GitHub repo link: [DA COMPLETARE]
 - Demo video: [DA COMPLETARE]
-- Codex-attributed commits: [ASSENTE], because the current folder is not a Git repository
-- Exact model behavior across hardware: [AMBIGUO], because hardware/runtime are not specified
+- Social post URL: [DA COMPLETARE]
+- Exact optional-model behavior across hardware: [AMBIGUO], because Space hardware/runtime are not specified

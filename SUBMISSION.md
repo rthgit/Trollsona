@@ -1,61 +1,75 @@
 # Trollsona Submission Pack
 
-## Demo Script
-
-| scene | action | what it shows | estimated duration |
-|---|---|---|---|
-| Opening | Open the Hugging Face Space | Project name, track, Gradio UI | 5s |
-| User input | Enter name and short personal lore | Simple input flow | 10s |
-| Controls | Pick resident menace, set sting level, keep useful truth enabled | Persona dropdown, slider, checkbox | 8s |
-| Generate | Click `Generate Trollsona` | End-to-end Gradio callback | 5s |
-| Trollsona output | Show generated card | Trollsona name, roast, output styling | 10s |
-| Useful advice | Point to advice tile | Joke plus actionable suggestion | 5s |
-| Cursed paperwork | Open debug accordion only if needed | Deterministic data contract hidden from primary UI | 5s |
-| Close | Mention fallback and no mandatory cloud API | Reliability for judging | 7s |
-
-Estimated total: 55s.
-
-## Social Post Draft
-
-Hook: Meet your troll alter ego.
-
-What it does: Trollsona turns a tiny user profile into a theatrical roast dossier with a trollsona name, one useful slap, and a deterministic cringe meter.
-
-Small model constraint: Built for the small-model track with an optional local Transformers model path under <=32B parameters, plus a deterministic fallback for reliable demos.
-
-Space link: [DA COMPLETARE]
-
-GitHub repo: [DA COMPLETARE]
-
-Call to action: Try it, share your Trollsona, and see how much bridge-certified cringe your side quests produce.
-
-## Codex Track Checklist
+## Submission Checklist
 
 | requirement | status | proof | missing action |
 |---|---|---|---|
-| Hugging Face Space deploy | [DA COMPLETARE] | Local Gradio launch passed in QA | Create Space and upload files |
-| Public GitHub repo | [ASSENTE] | `.git` is absent in current folder | Initialize/publish repo |
-| Codex-attributed commits | [ASSENTE] | `.git` is absent in current folder | Commit changes with Codex attribution if required |
-| Space README links to repo | [DA COMPLETARE] | README has repo placeholder | Add public repo URL |
-| Demo video | [DA COMPLETARE] | No video file/link in repo/input | Record 45-60s demo |
-| Social post | [DA COMPLETARE] | Draft exists in this file | Publish and add final link if required |
-| Gradio app | DONE | `app.py` contains `gr.Blocks` app | None |
+| Public GitHub repo | DONE | https://github.com/rthgit/Trollsona | None |
+| Codex-attributed commits | DONE | `0428072`; final docs commit in latest Git history after this pass | None |
+| Space README links to repo | DONE | `README.md` contains repo URL | None |
+| Hugging Face Space deploy | [DA COMPLETARE] | No Space URL present | Create Space and push/upload files |
+| Space link | [DA COMPLETARE] | README placeholder | Replace after deploy |
+| Demo video | [DA COMPLETARE] | No video link/file present | Record 45-60s demo |
+| Social post | [DA COMPLETARE] | Draft below | Publish and add final link if required |
+| Gradio app | DONE | `app.py` defines `gr.Blocks` app | None |
 | Small model <=32B | DONE | Optional model id: `Qwen/Qwen2.5-3B-Instruct` | None |
-| No mandatory cloud API | DONE | README states no required secrets; fallback is local | None |
-| Deterministic fallback | DONE | QA passed repeated identical generation | None |
-| Safety guard | DONE | `safety_guard()` and blocked patterns implemented | None |
-| Track alignment | DONE | README names `An Adventure in Thousand Token Wood` | None |
+| Deterministic fallback | DONE | Local QA: repeated generation matched | None |
+| Debug hidden by default | DONE | Source/fallback live in `See the cursed paperwork` | None |
+| No mandatory cloud API | DONE | Default fallback requires no secrets | None |
+
+## Demo Video Script
+
+Target length: 45-60 seconds.
+
+| timestamp | action | what it shows | suggested line |
+|---|---|---|---|
+| 0:00-0:05 | Open the Space | Trollsona hero, badges, dark ritual UI | "This is Trollsona, a tiny ritual for summoning your troll alter ego." |
+| 0:05-0:15 | Enter name and lore | `What do they call you?`, `Confess your little lore` | "Give it a name and a little confession." |
+| 0:15-0:23 | Pick menace and sting | Dropdown, slider, useful truth checkbox | "Choose the resident menace and how hard the roast should sting." |
+| 0:23-0:32 | Click `Summon Trollsona` | End-to-end generation | "The app returns a theatrical dossier, not a raw chatbot answer." |
+| 0:32-0:45 | Show result card | Name, roast, useful slap, goblin meter | "You get a trollsona name, one sharp line, one useful slap, and a deterministic goblin meter." |
+| 0:45-0:53 | Optional: open paperwork | Debug source/fallback hidden by default | "Debug info stays in the cursed paperwork, out of the main experience." |
+| 0:53-0:60 | Close on constraints | Gradio, small model, deterministic fallback | "It is built for Gradio Spaces, small-model constraints, and reliable demos." |
+
+## Social Post Draft
+
+Hook: I built a little ritual that summons the troll living behind your respectable personality.
+
+Description: Trollsona turns a short confession into a theatrical alter-ego dossier: trollsona name, playful roast, one useful slap, and a deterministic goblin meter.
+
+Tech note: Built for Build Small Hackathon as a Gradio Hugging Face Space. Default path is deterministic fallback; optional local Transformers model path stays under the `<=32B` small-model constraint.
+
+Links:
+
+- Space: [DA COMPLETARE]
+- GitHub: https://github.com/rthgit/Trollsona
+
+CTA: Try it, summon your menace, and share the dossier.
+
+## Release QA
+
+| test | command/action | expected result | status |
+|---|---|---|---|
+| Python compile | `python -B -m py_compile app.py` | no syntax errors | DONE |
+| Deterministic fallback | run `generate_trollsona(...)` twice | identical structured output | DONE |
+| Local Gradio launch | `python app.py` | app opens on `127.0.0.1:7860` | DONE in local QA |
+| Input-full generation | fill name + lore + summon | result card renders | DONE in local QA |
+| Input-minimal generation | empty name/lore | output still complete | DONE |
+| Debug default | load page | source/fallback hidden | DONE |
+| Visual contrast | inspect input/dropdown/checkbox/CTA/card | readable UI | DONE |
+| Git status | `git status --short --ignored` | only ignored `.env` / QA screenshot remain | DONE |
+| README repo link | inspect README | GitHub URL present | DONE |
+| Space build | Hugging Face build logs | Space starts successfully | [DA COMPLETARE] |
+| Browser test on Space | open public Space and summon | card renders on hosted Space | [DA COMPLETARE] |
 
 ## Final Ship Plan
 
 | step | owner | output | done criteria | priority |
 |---|---|---|---|---|
-| 1 | Codex/User | Final README | README includes description, run, safety, model, hackathon fit | P0 |
-| 2 | User | Git repository | Public GitHub repo URL | P0 |
-| 3 | User | Codex-attributed commits | Commit history satisfies track requirement | P0 |
-| 4 | User | Hugging Face Space | Public Space URL opens the Gradio app | P0 |
-| 5 | User | Final Space README links | Space README includes GitHub repo link | P0 |
-| 6 | User | Final smoke test | Space generates trollsona card and JSON output | P0 |
-| 7 | User | Demo video | 45-60s video shows full flow | P1 |
-| 8 | User | Social post | Published post with Space and repo placeholders replaced | P1 |
-| 9 | User | Submission form | All required links submitted before deadline | P0 |
+| 1 | Codex | Final README and submission docs | Docs committed | P0 |
+| 2 | Codex/User | GitHub push | `rthgit/Trollsona` contains latest commits | P0 |
+| 3 | User | Hugging Face Space | Public Space URL opens app | P0 |
+| 4 | User | README Space link | `[DA COMPLETARE]` replaced with Space URL | P0 |
+| 5 | User | Demo video | 45-60s video available | P1 |
+| 6 | User | Social post | Published post with links | P1 |
+| 7 | User | Submission form | All required URLs submitted | P0 |
