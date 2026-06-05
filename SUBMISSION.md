@@ -5,7 +5,7 @@
 | requirement | status | proof | missing action |
 |---|---|---|---|
 | Public GitHub repo | DONE | https://github.com/rthgit/Trollsona | None |
-| Codex-attributed commits | DONE | `0428072`; final docs commit in latest Git history after this pass | None |
+| Codex-attributed commits | DONE | `3fe2db1`, `4f196a6`, `8a1b09d` | None |
 | Space README links to repo | DONE | `README.md` contains repo URL | None |
 | Hugging Face Space deploy | DONE | https://huggingface.co/spaces/RthItalia/Trollsona | None |
 | Space link | DONE | `README.md` contains https://huggingface.co/spaces/RthItalia/Trollsona | None |
@@ -23,15 +23,28 @@
 
 Target length: 45-60 seconds.
 
+Recommended tested input:
+
+```text
+Name: Alex
+Lore: I start productivity systems and then reorganize the labels forever.
+Persona: Dungeon Intern
+Spice: 4
+Advice: on
+```
+
+Hosted test result: `Source: transformers_model`; runtime `Qwen/Qwen2.5-0.5B-Instruct` as CPU fallback model.
+
 | timestamp | action | what it shows | suggested line |
 |---|---|---|---|
-| 0:00-0:05 | Open the Space | Trollsona hero, badges, dark ritual UI | "This is Trollsona, a tiny ritual for summoning your troll alter ego." |
-| 0:05-0:15 | Enter name and lore | `What do they call you?`, `Confess your little lore` | "Give it a name and a little confession." |
-| 0:15-0:23 | Pick menace and sting | Dropdown, slider, useful truth checkbox | "Choose the resident menace and how hard the roast should sting." |
-| 0:23-0:32 | Click `Summon Trollsona` | End-to-end generation | "The app returns a theatrical dossier, not a raw chatbot answer." |
-| 0:32-0:45 | Show result card | Name, roast, useful slap, goblin meter | "You get a trollsona name, one sharp line, one useful slap, and a goblin meter." |
-| 0:45-0:53 | Optional: open paperwork | Debug source/fallback hidden by default | "Debug info stays in the cursed paperwork, out of the main experience." |
-| 0:53-0:60 | Close on constraints | Gradio, small model, fallback guard | "It is built for Gradio Spaces, small-model constraints, and reliable demos." |
+| 0:00-0:05 | Open the Space | Trollsona hero, badges, dark ritual UI | "This is Trollsona: a small-model goblin that turns your personal lore into a cursed alter ego." |
+| 0:05-0:15 | Enter name and lore | `What do they call you?`, `Confess your little lore` | "I give it a name and a very specific little confession." |
+| 0:15-0:23 | Pick menace and sting | `Dungeon Intern`, spice `4`, advice on | "Then I choose the resident menace and how hard it should sting." |
+| 0:23-0:32 | Click `Summon Trollsona` | End-to-end generation | "It summons a theatrical dossier instead of a plain chatbot answer." |
+| 0:32-0:42 | Show result card | Trollsona name, roast, useful slap, goblin meter | "You get a name, a roast, one useful slap, and the goblin meter." |
+| 0:42-0:50 | Open paperwork | `Source: transformers_model` and CPU runtime | "The model details stay hidden in the cursed paperwork until you ask for them." |
+| 0:50-0:58 | Show README/Codex Track | Space, GitHub, model cascade, Codex commits | "Built as a Gradio Space with a small-model cascade and Codex-tracked commits." |
+| 0:58-1:00 | Close on Space | Final result card or Space URL | "Tiny model, giant attitude." |
 
 ## Social Post Draft
 

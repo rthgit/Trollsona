@@ -25,6 +25,8 @@ Trollsona is a playful Gradio experience that turns a short user confession into
 
 Built with a compact RthItalia model derived from `Qwen/Qwen2.5-3B-Instruct`, under `32B` parameters. The deployed Space is configured to try that model first, then a lightweight Qwen 0.5B model, then the deterministic local fallback if model loading or generation is unavailable.
 
+The public Space currently runs the lightweight Qwen fallback on CPU, while the custom RthItalia compact 3B path is enabled automatically when CUDA is available.
+
 ## Features
 
 - Immersive Gradio UI for Hugging Face Spaces
@@ -36,19 +38,22 @@ Built with a compact RthItalia model derived from `Qwen/Qwen2.5-3B-Instruct`, un
 - Persona dropdown, sting slider, and useful-truth checkbox
 - Source/fallback notes hidden behind `See the cursed paperwork`
 
-## Model And Runtime
+## Model Runtime
 
-Primary model:
+Trollsona uses a small-model cascade:
 
-```text
-RthItalia/nano_compact_3b_qkvfp16
-```
+1. `RthItalia/nano_compact_3b_qkvfp16`
+   - compact `Qwen/Qwen2.5-3B-Instruct`-derived model by RthItalia
+   - preferred runtime when CUDA is available
+   - loaded with `trust_remote_code=True`
 
-Secondary model fallback:
+2. `Qwen/Qwen2.5-0.5B-Instruct`
+   - lightweight hosted CPU fallback model
+   - currently active on the public Hugging Face Space running on `cpu-basic`
 
-```text
-Qwen/Qwen2.5-0.5B-Instruct
-```
+3. Deterministic fallback
+   - used only if both model paths are unavailable or return unsafe/invalid output
+   - keeps the demo stable and reproducible
 
 Constraint:
 
@@ -60,6 +65,15 @@ Space model-first behavior:
 
 ```bash
 TROLLSONA_ENABLE_MODEL=1
+```
+
+Recommended Hugging Face Space variables:
+
+```text
+TROLLSONA_ENABLE_MODEL=1
+TROLLSONA_MODEL_ID=RthItalia/nano_compact_3b_qkvfp16
+TROLLSONA_FALLBACK_MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct
+TROLLSONA_MAX_NEW_TOKENS=200
 ```
 
 Local fallback-safe behavior if no variable is set:
@@ -74,16 +88,12 @@ Deterministic fallback only:
 TROLLSONA_ENABLE_MODEL=0
 ```
 
-The primary RthItalia model is loaded with `trust_remote_code=True` and expects CUDA for the primary path. `bitsandbytes` is not required. If CUDA is unavailable, model loading fails, or generation returns invalid output, the app falls back to the secondary model and then to the deterministic local generator.
+Implementation notes:
 
-Recommended Hugging Face Space variables:
-
-```text
-TROLLSONA_ENABLE_MODEL=1
-TROLLSONA_MODEL_ID=RthItalia/nano_compact_3b_qkvfp16
-TROLLSONA_FALLBACK_MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct
-TROLLSONA_MAX_NEW_TOKENS=200
-```
+- `bitsandbytes` is not required
+- primary RthItalia path expects CUDA
+- CPU-only Spaces use the Qwen 0.5B model before the deterministic fallback
+- source/runtime/fallback details are hidden in `See the cursed paperwork`
 
 ## Stack
 
@@ -174,9 +184,16 @@ If generated model output fails the safety guard, the app replaces it with a saf
 
 ## Codex Track
 
-- Public GitHub repo: https://github.com/rthgit/Trollsona
-- Codex-attributed polish commit: `0428072`
-- Deploy documentation commit: `Add deployed Space link for Trollsona submission`
+Built with OpenAI Codex.
+
+Public GitHub repo: https://github.com/rthgit/Trollsona
+
+Codex-attributed commits include:
+
+- `3fe2db1` Polish Trollsona dossier UI and grotesque prompt voice with Codex
+- `4f196a6` Add RthItalia model cascade with Codex
+- `8a1b09d` Document hosted model cascade QA with Codex
+
 - Space README repo link: present
 - Demo video: [DA COMPLETARE]
 - Social post: [DA COMPLETARE]
