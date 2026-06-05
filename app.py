@@ -12,7 +12,7 @@ from typing import Any
 APP_TITLE = "Trollsona"
 APP_SUBTITLE = "Summon the little menace living behind your respectable personality."
 TRACK_NAME = "An Adventure in Thousand Token Wood"
-DEFAULT_MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
+DEFAULT_MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
 MAX_PROFILE_CHARS = 700
 MAX_NAME_CHARS = 36
 
@@ -42,7 +42,7 @@ def parse_int_env(name: str, default: int, min_value: int, max_value: int) -> in
 
 MODEL_ID = os.getenv("TROLLSONA_MODEL_ID", DEFAULT_MODEL_ID)
 MODEL_ENABLED = parse_bool_env("TROLLSONA_ENABLE_MODEL", default=True)
-MAX_NEW_TOKENS = parse_int_env("TROLLSONA_MAX_NEW_TOKENS", 180, 32, 512)
+MAX_NEW_TOKENS = parse_int_env("TROLLSONA_MAX_NEW_TOKENS", 128, 32, 512)
 
 
 PERSONA_STYLES = {
@@ -345,7 +345,7 @@ def generate_with_model(prompt: str) -> tuple[str | None, str]:
         import torch
 
         model_prompt = format_generation_prompt(tokenizer, prompt)
-        inputs = tokenizer(model_prompt, return_tensors="pt")
+        inputs = tokenizer(model_prompt, return_tensors="pt", truncation=True, max_length=1536)
         target_device = getattr(model, "device", None)
         if target_device is not None and str(target_device) != "meta":
             inputs = {key: value.to(target_device) for key, value in inputs.items()}

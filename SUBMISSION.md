@@ -9,11 +9,11 @@
 | Space README links to repo | DONE | `README.md` contains repo URL | None |
 | Hugging Face Space deploy | DONE | https://huggingface.co/spaces/RthItalia/Trollsona | None |
 | Space link | DONE | `README.md` contains https://huggingface.co/spaces/RthItalia/Trollsona | None |
-| Space model variables | DONE | `.env.example` documents `TROLLSONA_ENABLE_MODEL=1`, `TROLLSONA_MODEL_ID=Qwen/Qwen2.5-1.5B-Instruct` | Configure the same variables in Space settings if overriding defaults |
+| Space model variables | DONE | `.env.example` documents `TROLLSONA_ENABLE_MODEL=1`, `TROLLSONA_MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct` | Configure the same variables in Space settings if overriding defaults |
 | Demo video | [DA COMPLETARE] | No video link/file present | Record 45-60s demo |
 | Social post | [DA COMPLETARE] | Draft below contains Space/GitHub URLs | Publish and add final link if required |
 | Gradio app | DONE | `app.py` defines `gr.Blocks` app | None |
-| Small model <=32B | DONE | Primary model id: `Qwen/Qwen2.5-1.5B-Instruct` | None |
+| Small model <=32B | DONE | Primary model id: `Qwen/Qwen2.5-0.5B-Instruct` | None |
 | Transformers model path | DONE | `TROLLSONA_ENABLE_MODEL=1` by default; `AutoModelForCausalLM.from_pretrained` implemented | None |
 | Deterministic fallback | DONE | Fallback remains available with `TROLLSONA_ENABLE_MODEL=0` or model failure | None |
 | Debug hidden by default | DONE | Source/fallback live in `See the cursed paperwork` | None |

@@ -40,7 +40,7 @@ The default runtime attempts a local Hugging Face Transformers model first. A de
 Default model:
 
 ```text
-Qwen/Qwen2.5-1.5B-Instruct
+Qwen/Qwen2.5-0.5B-Instruct
 ```
 
 Constraint:
@@ -67,8 +67,8 @@ Recommended Hugging Face Space variables:
 
 ```text
 TROLLSONA_ENABLE_MODEL=1
-TROLLSONA_MODEL_ID=Qwen/Qwen2.5-1.5B-Instruct
-TROLLSONA_MAX_NEW_TOKENS=180
+TROLLSONA_MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct
+TROLLSONA_MAX_NEW_TOKENS=128
 ```
 
 ## Stack
