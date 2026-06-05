@@ -19,13 +19,15 @@ pinned: false
 
 **GitHub repo:** https://github.com/rthgit/Trollsona
 
-**Hugging Face Space:** https://huggingface.co/spaces/RthItalia/Trollsona
+**Official Build Small Space:** https://huggingface.co/spaces/build-small-hackathon/Trollsona
+
+**Backup Space:** https://huggingface.co/spaces/RthItalia/Trollsona
 
 Trollsona is a playful Gradio experience that turns a short user confession into a theatrical troll alter ego. The app returns a dossier-style result card with a trollsona name, a warm roast, one useful slap, and a goblin meter.
 
 Built with a compact RthItalia model derived from `Qwen/Qwen2.5-3B-Instruct`, under `32B` parameters. The deployed Space is configured to try that model first, then a lightweight Qwen 0.5B model, then the deterministic local fallback if model loading or generation is unavailable.
 
-The public Space currently runs the lightweight Qwen fallback on CPU, while the custom RthItalia compact 3B path is enabled automatically when CUDA is available.
+The official public Space currently runs the lightweight Qwen fallback on CPU, while the custom RthItalia compact 3B path is enabled automatically when CUDA is available.
 
 ## Features
 
@@ -49,7 +51,7 @@ Trollsona uses a small-model cascade:
 
 2. `Qwen/Qwen2.5-0.5B-Instruct`
    - lightweight hosted CPU fallback model
-   - currently active on the public Hugging Face Space running on `cpu-basic`
+   - currently active on the official public Hugging Face Space running on `cpu-basic`
 
 3. Deterministic fallback
    - used only if both model paths are unavailable or return unsafe/invalid output
@@ -149,7 +151,13 @@ Space SDK:
 Gradio
 ```
 
-Space URL:
+Official Build Small Space URL:
+
+```text
+https://huggingface.co/spaces/build-small-hackathon/Trollsona
+```
+
+Backup Space URL:
 
 ```text
 https://huggingface.co/spaces/RthItalia/Trollsona
@@ -193,16 +201,18 @@ Codex-attributed commits include:
 - `3fe2db1` Polish Trollsona dossier UI and grotesque prompt voice with Codex
 - `4f196a6` Add RthItalia model cascade with Codex
 - `8a1b09d` Document hosted model cascade QA with Codex
+- `aad1a45` Finalize Trollsona submission packaging with Codex
 
 - Space README repo link: present
-- Demo video: [DA COMPLETARE]
-- Social post: [DA COMPLETARE]
+- Demo video: https://youtu.be/p2m9tac8lF8
+- Social post: https://www.linkedin.com/posts/christian-quintino-de-luca-72b808344_buildsmall-gradio-huggingface-ugcPost-7468732928114651137-zX2a/
 
 ## Known Limits
 
-- Public Space link: https://huggingface.co/spaces/RthItalia/Trollsona
-- Demo video: [DA COMPLETARE]
-- Social post URL: [DA COMPLETARE]
+- Official public Space link: https://huggingface.co/spaces/build-small-hackathon/Trollsona
+- Backup Space link: https://huggingface.co/spaces/RthItalia/Trollsona
+- Demo video: https://youtu.be/p2m9tac8lF8
+- Social post URL: https://www.linkedin.com/posts/christian-quintino-de-luca-72b808344_buildsmall-gradio-huggingface-ugcPost-7468732928114651137-zX2a/
 - Primary RthItalia model path requires CUDA; CPU-only Spaces use the secondary model fallback before deterministic fallback
 - First model-backed generation can be slower on cold Spaces while model files load
 - Exact model-backed behavior on upgraded Space hardware: [AMBIGUO], because upgraded hardware has not been tested

@@ -10,3 +10,4 @@ __pycache__/
 gradio.out.log
 gradio.err.log
 trollsona-*.png
+artifacts/

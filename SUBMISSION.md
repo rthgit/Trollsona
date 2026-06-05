@@ -7,11 +7,13 @@
 | Public GitHub repo | DONE | https://github.com/rthgit/Trollsona | None |
 | Codex-attributed commits | DONE | `3fe2db1`, `4f196a6`, `8a1b09d` | None |
 | Space README links to repo | DONE | `README.md` contains repo URL | None |
-| Hugging Face Space deploy | DONE | https://huggingface.co/spaces/RthItalia/Trollsona | None |
-| Space link | DONE | `README.md` contains https://huggingface.co/spaces/RthItalia/Trollsona | None |
+| Hugging Face Space deploy | DONE | https://huggingface.co/spaces/build-small-hackathon/Trollsona | None |
+| Backup Space deploy | DONE | https://huggingface.co/spaces/RthItalia/Trollsona | None |
+| Space link | DONE | `README.md` contains https://huggingface.co/spaces/build-small-hackathon/Trollsona | None |
 | Space model variables | DONE | `.env.example` documents `TROLLSONA_ENABLE_MODEL=1`, `TROLLSONA_MODEL_ID=RthItalia/nano_compact_3b_qkvfp16`, `TROLLSONA_FALLBACK_MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct` | Configure the same variables in Space settings if overriding defaults |
-| Demo video | [DA COMPLETARE] | No video link/file present | Record 45-60s demo |
-| Social post | [DA COMPLETARE] | Draft below contains Space/GitHub URLs | Publish and add final link if required |
+| Demo video file | DONE | `artifacts/trollsona-demo.mp4` | None |
+| Demo video public URL | DONE | https://youtu.be/p2m9tac8lF8 | None |
+| Social post | DONE | https://www.linkedin.com/posts/christian-quintino-de-luca-72b808344_buildsmall-gradio-huggingface-ugcPost-7468732928114651137-zX2a/ | None |
 | Gradio app | DONE | `app.py` defines `gr.Blocks` app | None |
 | Small model <=32B | DONE | Primary model id: `RthItalia/nano_compact_3b_qkvfp16`; fallback model id: `Qwen/Qwen2.5-0.5B-Instruct` | None |
 | Transformers model path | DONE | `TROLLSONA_ENABLE_MODEL=1` in Space variables; `AutoModelForCausalLM.from_pretrained(..., trust_remote_code=True)` implemented | None |
@@ -33,7 +35,7 @@ Spice: 4
 Advice: on
 ```
 
-Hosted test result: `Source: transformers_model`; runtime `Qwen/Qwen2.5-0.5B-Instruct` as CPU fallback model.
+Hosted test result on the official Build Small Space: `Source: transformers_model`; runtime `Qwen/Qwen2.5-0.5B-Instruct` as CPU fallback model.
 
 | timestamp | action | what it shows | suggested line |
 |---|---|---|---|
@@ -56,8 +58,9 @@ Tech note: Built for Build Small Hackathon as a Gradio Hugging Face Space. The p
 
 Links:
 
-- Space: https://huggingface.co/spaces/RthItalia/Trollsona
+- Space: https://huggingface.co/spaces/build-small-hackathon/Trollsona
 - GitHub: https://github.com/rthgit/Trollsona
+- Demo video: https://youtu.be/p2m9tac8lF8
 
 CTA: Try it, summon your menace, and share the dossier.
 
@@ -75,9 +78,9 @@ CTA: Try it, summon your menace, and share the dossier.
 | Visual contrast | inspect input/dropdown/checkbox/CTA/card | readable UI | DONE |
 | Git status | `git status --short --ignored` | only ignored `.env` / QA screenshot remain | DONE |
 | README repo link | inspect README | GitHub URL present | DONE |
-| Space build | Hugging Face runtime API | `stage=RUNNING`, `requested=cpu-basic` | DONE |
+| Official org Space build | Hugging Face Space/API check | public app returns HTTP 200 | DONE |
 | Browser test on Space | Playwright on public Space | card renders; debug source/fallback hidden until accordion opens | DONE |
-| Hosted model-backed generation | Playwright on public Space, then open `See the cursed paperwork` | `Source: transformers_model`; runtime `Qwen/Qwen2.5-0.5B-Instruct` as `fallback_model` on CPU; fallback note reports primary `RthItalia/nano_compact_3b_qkvfp16` skipped because CUDA is unavailable | DONE |
+| Hosted model-backed generation | Gradio API on official org Space | `Source: transformers_model`; result card renders | DONE |
 
 ## Final Ship Plan
 
@@ -85,8 +88,8 @@ CTA: Try it, summon your menace, and share the dossier.
 |---|---|---|---|---|
 | 1 | Codex | Final README and submission docs | Docs committed | P0 |
 | 2 | Codex/User | GitHub push | `rthgit/Trollsona` contains latest commits | P0 |
-| 3 | Codex | Hugging Face Space | Public Space URL opens app | P0 |
+| 3 | Codex | Official Build Small Hugging Face Space | Public Space URL opens app | P0 |
 | 4 | Codex | README Space link | Space URL is present in `README.md` | P0 |
-| 5 | User | Demo video | 45-60s video available | P1 |
-| 6 | User | Social post | Published post with links | P1 |
+| 5 | User | Demo video public upload | Public video URL available | P0 |
+| 6 | User | Social post | Published post with links | DONE |
 | 7 | User | Submission form | All required URLs submitted | P0 |
