@@ -9,13 +9,15 @@
 | Space README links to repo | DONE | `README.md` contains repo URL | None |
 | Hugging Face Space deploy | DONE | https://huggingface.co/spaces/RthItalia/Trollsona | None |
 | Space link | DONE | `README.md` contains https://huggingface.co/spaces/RthItalia/Trollsona | None |
+| Space model variables | DONE | `.env.example` documents `TROLLSONA_ENABLE_MODEL=1`, `TROLLSONA_MODEL_ID=Qwen/Qwen2.5-1.5B-Instruct` | Configure the same variables in Space settings if overriding defaults |
 | Demo video | [DA COMPLETARE] | No video link/file present | Record 45-60s demo |
 | Social post | [DA COMPLETARE] | Draft below contains Space/GitHub URLs | Publish and add final link if required |
 | Gradio app | DONE | `app.py` defines `gr.Blocks` app | None |
-| Small model <=32B | DONE | Optional model id: `Qwen/Qwen2.5-3B-Instruct` | None |
-| Deterministic fallback | DONE | Local QA: repeated generation matched | None |
+| Small model <=32B | DONE | Primary model id: `Qwen/Qwen2.5-1.5B-Instruct` | None |
+| Transformers model path | DONE | `TROLLSONA_ENABLE_MODEL=1` by default; `AutoModelForCausalLM.from_pretrained` implemented | None |
+| Deterministic fallback | DONE | Fallback remains available with `TROLLSONA_ENABLE_MODEL=0` or model failure | None |
 | Debug hidden by default | DONE | Source/fallback live in `See the cursed paperwork` | None |
-| No mandatory cloud API | DONE | Default fallback requires no secrets | None |
+| No mandatory cloud API | DONE | Public HF model path and fallback require no app secrets | None |
 
 ## Demo Video Script
 
@@ -27,17 +29,17 @@ Target length: 45-60 seconds.
 | 0:05-0:15 | Enter name and lore | `What do they call you?`, `Confess your little lore` | "Give it a name and a little confession." |
 | 0:15-0:23 | Pick menace and sting | Dropdown, slider, useful truth checkbox | "Choose the resident menace and how hard the roast should sting." |
 | 0:23-0:32 | Click `Summon Trollsona` | End-to-end generation | "The app returns a theatrical dossier, not a raw chatbot answer." |
-| 0:32-0:45 | Show result card | Name, roast, useful slap, goblin meter | "You get a trollsona name, one sharp line, one useful slap, and a deterministic goblin meter." |
+| 0:32-0:45 | Show result card | Name, roast, useful slap, goblin meter | "You get a trollsona name, one sharp line, one useful slap, and a goblin meter." |
 | 0:45-0:53 | Optional: open paperwork | Debug source/fallback hidden by default | "Debug info stays in the cursed paperwork, out of the main experience." |
-| 0:53-0:60 | Close on constraints | Gradio, small model, deterministic fallback | "It is built for Gradio Spaces, small-model constraints, and reliable demos." |
+| 0:53-0:60 | Close on constraints | Gradio, small model, fallback guard | "It is built for Gradio Spaces, small-model constraints, and reliable demos." |
 
 ## Social Post Draft
 
 Hook: I built a little ritual that summons the troll living behind your respectable personality.
 
-Description: Trollsona turns a short confession into a theatrical alter-ego dossier: trollsona name, playful roast, one useful slap, and a deterministic goblin meter.
+Description: Trollsona turns a short confession into a theatrical alter-ego dossier: trollsona name, playful roast, one useful slap, and a goblin meter.
 
-Tech note: Built for Build Small Hackathon as a Gradio Hugging Face Space. Default path is deterministic fallback; optional local Transformers model path stays under the `<=32B` small-model constraint.
+Tech note: Built for Build Small Hackathon as a Gradio Hugging Face Space. The primary local Transformers model path stays under the `<=32B` small-model constraint; deterministic fallback remains as a reliability guard.
 
 Links:
 
@@ -51,6 +53,7 @@ CTA: Try it, summon your menace, and share the dossier.
 | test | command/action | expected result | status |
 |---|---|---|---|
 | Python compile | `python -B -m py_compile app.py` | no syntax errors | DONE |
+| Model path implemented | inspect `app.py` | `TROLLSONA_ENABLE_MODEL` defaults to `1`; `from_pretrained` path present | DONE |
 | Deterministic fallback | run `generate_trollsona(...)` twice | identical structured output | DONE |
 | Local Gradio launch | `python app.py` | app opens on `127.0.0.1:7860` | DONE in local QA |
 | Input-full generation | fill name + lore + summon | result card renders | DONE in local QA |

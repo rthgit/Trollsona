@@ -12,7 +12,7 @@ from typing import Any
 APP_TITLE = "Trollsona"
 APP_SUBTITLE = "Summon the little menace living behind your respectable personality."
 TRACK_NAME = "An Adventure in Thousand Token Wood"
-DEFAULT_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
+DEFAULT_MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
 MAX_PROFILE_CHARS = 700
 MAX_NAME_CHARS = 36
 
@@ -41,8 +41,8 @@ def parse_int_env(name: str, default: int, min_value: int, max_value: int) -> in
 
 
 MODEL_ID = os.getenv("TROLLSONA_MODEL_ID", DEFAULT_MODEL_ID)
-MODEL_ENABLED = parse_bool_env("TROLLSONA_ENABLE_MODEL", default=False)
-MAX_NEW_TOKENS = parse_int_env("TROLLSONA_MAX_NEW_TOKENS", 220, 32, 512)
+MODEL_ENABLED = parse_bool_env("TROLLSONA_ENABLE_MODEL", default=True)
+MAX_NEW_TOKENS = parse_int_env("TROLLSONA_MAX_NEW_TOKENS", 180, 32, 512)
 
 
 PERSONA_STYLES = {
@@ -305,11 +305,14 @@ def load_model() -> tuple[Any | None, Any | None, str]:
 
     try:
         tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+        if tokenizer.pad_token_id is None and tokenizer.eos_token is not None:
+            tokenizer.pad_token = tokenizer.eos_token
         try:
             model = AutoModelForCausalLM.from_pretrained(
                 MODEL_ID,
                 device_map="auto",
                 torch_dtype="auto",
+                low_cpu_mem_usage=True,
             )
         except TypeError:
             model = AutoModelForCausalLM.from_pretrained(MODEL_ID, device_map="auto")
@@ -320,6 +323,19 @@ def load_model() -> tuple[Any | None, Any | None, str]:
         return None, None, f"model load failed: {type(exc).__name__}: {exc}"
 
 
+def format_generation_prompt(tokenizer: Any, prompt: str) -> str:
+    try:
+        if getattr(tokenizer, "chat_template", None):
+            return tokenizer.apply_chat_template(
+                [{"role": "user", "content": prompt}],
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+    except Exception:
+        return prompt
+    return prompt
+
+
 def generate_with_model(prompt: str) -> tuple[str | None, str]:
     tokenizer, model, status = load_model()
     if tokenizer is None or model is None:
@@ -328,7 +344,8 @@ def generate_with_model(prompt: str) -> tuple[str | None, str]:
     try:
         import torch
 
-        inputs = tokenizer(prompt, return_tensors="pt")
+        model_prompt = format_generation_prompt(tokenizer, prompt)
+        inputs = tokenizer(model_prompt, return_tensors="pt")
         target_device = getattr(model, "device", None)
         if target_device is not None and str(target_device) != "meta":
             inputs = {key: value.to(target_device) for key, value in inputs.items()}
@@ -376,6 +393,21 @@ def parse_model_output(raw_text: str, score: int) -> dict[str, Any] | None:
         "source": "transformers_model",
         "fallback_reason": "",
     }
+    return result
+
+
+def repair_model_output(raw_text: str, fallback: dict[str, Any]) -> dict[str, Any] | None:
+    repaired_reply = clean_text(raw_text, 360)
+    repaired_reply = re.sub(r"^```(?:json)?|```$", "", repaired_reply).strip()
+    if not repaired_reply or repaired_reply.startswith("{"):
+        return None
+    if not is_safe_text(repaired_reply):
+        return None
+
+    result = dict(fallback)
+    result["troll_reply"] = repaired_reply
+    result["source"] = "transformers_model_repaired"
+    result["fallback_reason"] = "model output was not valid JSON and was repaired"
     return result
 
 
@@ -470,6 +502,8 @@ def generate_trollsona(
     result = None
     if raw_text:
         result = parse_model_output(raw_text, score)
+        if result is None:
+            result = repair_model_output(raw_text, fallback)
 
     if result is None:
         result = dict(fallback)

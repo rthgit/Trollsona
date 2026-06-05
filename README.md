@@ -23,24 +23,24 @@ pinned: false
 
 Trollsona is a playful Gradio experience that turns a short user confession into a theatrical troll alter ego. The app returns a dossier-style result card with a trollsona name, a warm roast, one useful slap, and a deterministic goblin meter.
 
-The default runtime uses a deterministic local fallback, so the demo works without mandatory cloud APIs, secrets, or model downloads. An optional Hugging Face Transformers path is available behind an environment flag.
+The default runtime attempts a local Hugging Face Transformers model first. A deterministic local fallback remains available if the model is disabled, unavailable, or produces unsafe/invalid output.
 
 ## Features
 
 - Immersive Gradio UI for Hugging Face Spaces
 - Theatrical trollsona result card
-- Deterministic fallback generator
-- Optional local Hugging Face Transformers generation path
+- Local Hugging Face Transformers generation path enabled by default
+- Deterministic fallback generator for resilience
 - Safe roast guard for non-hateful, non-identity-targeted humor
 - Persona dropdown, sting slider, and useful-truth checkbox
 - Source/fallback notes hidden behind `See the cursed paperwork`
 
 ## Model And Runtime
 
-Default optional model:
+Default model:
 
 ```text
-Qwen/Qwen2.5-3B-Instruct
+Qwen/Qwen2.5-1.5B-Instruct
 ```
 
 Constraint:
@@ -52,24 +52,32 @@ small model only, <=32B parameters
 Default behavior:
 
 ```bash
-TROLLSONA_ENABLE_MODEL=0
-```
-
-Optional local Transformers path:
-
-```bash
 TROLLSONA_ENABLE_MODEL=1
 ```
 
+Deterministic fallback only:
+
+```bash
+TROLLSONA_ENABLE_MODEL=0
+```
+
 If the model import, download, load, or generation fails, the app falls back to the deterministic local generator.
+
+Recommended Hugging Face Space variables:
+
+```text
+TROLLSONA_ENABLE_MODEL=1
+TROLLSONA_MODEL_ID=Qwen/Qwen2.5-1.5B-Instruct
+TROLLSONA_MAX_NEW_TOKENS=180
+```
 
 ## Stack
 
 - Python
 - Gradio
 - Hugging Face Spaces
-- Hugging Face Transformers, optional
-- PyTorch, optional model backend
+- Hugging Face Transformers, primary model path
+- PyTorch, model backend
 
 Required secrets:
 
@@ -90,16 +98,16 @@ Open:
 http://127.0.0.1:7860
 ```
 
-Deterministic fallback:
-
-```bash
-TROLLSONA_ENABLE_MODEL=0 python app.py
-```
-
-Optional local model path:
+Model-first run:
 
 ```bash
 TROLLSONA_ENABLE_MODEL=1 python app.py
+```
+
+Deterministic fallback run:
+
+```bash
+TROLLSONA_ENABLE_MODEL=0 python app.py
 ```
 
 ## Hugging Face Space
@@ -144,8 +152,9 @@ If generated model output fails the safety guard, the app replaces it with a saf
 - Built as a Gradio app for Hugging Face Space
 - Fits `An Adventure in Thousand Token Wood`
 - Supports the `<=32B` small-model constraint
+- Uses a small local Transformers model as the primary AI path
 - Runs without mandatory cloud APIs
-- Keeps the default demo deterministic
+- Keeps deterministic fallback as a reliability guard
 - Produces short, whimsical, shareable output
 
 ## Codex Track
@@ -162,4 +171,5 @@ If generated model output fails the safety guard, the app replaces it with a saf
 - Public Space link: https://huggingface.co/spaces/RthItalia/Trollsona
 - Demo video: [DA COMPLETARE]
 - Social post URL: [DA COMPLETARE]
-- Exact optional-model behavior on upgraded Space hardware: [AMBIGUO], because the optional Transformers path is disabled by default and has not been tested on upgraded hardware
+- First model-backed generation can be slower on cold CPU Spaces while model files load
+- Exact model-backed behavior on upgraded Space hardware: [AMBIGUO], because upgraded hardware has not been tested
