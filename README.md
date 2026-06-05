@@ -21,23 +21,30 @@ pinned: false
 
 **Hugging Face Space:** https://huggingface.co/spaces/RthItalia/Trollsona
 
-Trollsona is a playful Gradio experience that turns a short user confession into a theatrical troll alter ego. The app returns a dossier-style result card with a trollsona name, a warm roast, one useful slap, and a deterministic goblin meter.
+Trollsona is a playful Gradio experience that turns a short user confession into a theatrical troll alter ego. The app returns a dossier-style result card with a trollsona name, a warm roast, one useful slap, and a goblin meter.
 
-The default runtime attempts a local Hugging Face Transformers model first. A deterministic local fallback remains available if the model is disabled, unavailable, or produces unsafe/invalid output.
+Built with a compact RthItalia model derived from `Qwen/Qwen2.5-3B-Instruct`, under `32B` parameters. The deployed Space is configured to try that model first, then a lightweight Qwen 0.5B model, then the deterministic local fallback if model loading or generation is unavailable.
 
 ## Features
 
 - Immersive Gradio UI for Hugging Face Spaces
 - Theatrical trollsona result card
-- Local Hugging Face Transformers generation path enabled by default
-- Deterministic fallback generator for resilience
+- Local Hugging Face Transformers generation path for the primary AI runtime
+- Secondary lightweight Transformers model fallback
+- Deterministic fallback generator for final resilience
 - Safe roast guard for non-hateful, non-identity-targeted humor
 - Persona dropdown, sting slider, and useful-truth checkbox
 - Source/fallback notes hidden behind `See the cursed paperwork`
 
 ## Model And Runtime
 
-Default model:
+Primary model:
+
+```text
+RthItalia/nano_compact_3b_qkvfp16
+```
+
+Secondary model fallback:
 
 ```text
 Qwen/Qwen2.5-0.5B-Instruct
@@ -49,10 +56,16 @@ Constraint:
 small model only, <=32B parameters
 ```
 
-Default behavior:
+Space model-first behavior:
 
 ```bash
 TROLLSONA_ENABLE_MODEL=1
+```
+
+Local fallback-safe behavior if no variable is set:
+
+```bash
+TROLLSONA_ENABLE_MODEL=0
 ```
 
 Deterministic fallback only:
@@ -61,14 +74,15 @@ Deterministic fallback only:
 TROLLSONA_ENABLE_MODEL=0
 ```
 
-If the model import, download, load, or generation fails, the app falls back to the deterministic local generator.
+The primary RthItalia model is loaded with `trust_remote_code=True` and expects CUDA for the primary path. `bitsandbytes` is not required. If CUDA is unavailable, model loading fails, or generation returns invalid output, the app falls back to the secondary model and then to the deterministic local generator.
 
 Recommended Hugging Face Space variables:
 
 ```text
 TROLLSONA_ENABLE_MODEL=1
-TROLLSONA_MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct
-TROLLSONA_MAX_NEW_TOKENS=128
+TROLLSONA_MODEL_ID=RthItalia/nano_compact_3b_qkvfp16
+TROLLSONA_FALLBACK_MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct
+TROLLSONA_MAX_NEW_TOKENS=200
 ```
 
 ## Stack
@@ -152,7 +166,8 @@ If generated model output fails the safety guard, the app replaces it with a saf
 - Built as a Gradio app for Hugging Face Space
 - Fits `An Adventure in Thousand Token Wood`
 - Supports the `<=32B` small-model constraint
-- Uses a small local Transformers model as the primary AI path
+- Uses `RthItalia/nano_compact_3b_qkvfp16` as the primary AI path when CUDA is available
+- Keeps `Qwen/Qwen2.5-0.5B-Instruct` as a secondary model fallback
 - Runs without mandatory cloud APIs
 - Keeps deterministic fallback as a reliability guard
 - Produces short, whimsical, shareable output
@@ -171,5 +186,6 @@ If generated model output fails the safety guard, the app replaces it with a saf
 - Public Space link: https://huggingface.co/spaces/RthItalia/Trollsona
 - Demo video: [DA COMPLETARE]
 - Social post URL: [DA COMPLETARE]
-- First model-backed generation can be slower on cold CPU Spaces while model files load
+- Primary RthItalia model path requires CUDA; CPU-only Spaces use the secondary model fallback before deterministic fallback
+- First model-backed generation can be slower on cold Spaces while model files load
 - Exact model-backed behavior on upgraded Space hardware: [AMBIGUO], because upgraded hardware has not been tested

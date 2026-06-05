@@ -12,7 +12,8 @@ from typing import Any
 APP_TITLE = "Trollsona"
 APP_SUBTITLE = "Summon the little menace living behind your respectable personality."
 TRACK_NAME = "An Adventure in Thousand Token Wood"
-DEFAULT_MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
+DEFAULT_MODEL_ID = "RthItalia/nano_compact_3b_qkvfp16"
+DEFAULT_FALLBACK_MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
 MAX_PROFILE_CHARS = 700
 MAX_NAME_CHARS = 36
 
@@ -41,8 +42,9 @@ def parse_int_env(name: str, default: int, min_value: int, max_value: int) -> in
 
 
 MODEL_ID = os.getenv("TROLLSONA_MODEL_ID", DEFAULT_MODEL_ID)
-MODEL_ENABLED = parse_bool_env("TROLLSONA_ENABLE_MODEL", default=True)
-MAX_NEW_TOKENS = parse_int_env("TROLLSONA_MAX_NEW_TOKENS", 128, 32, 512)
+FALLBACK_MODEL_ID = os.getenv("TROLLSONA_FALLBACK_MODEL_ID", DEFAULT_FALLBACK_MODEL_ID)
+MODEL_ENABLED = parse_bool_env("TROLLSONA_ENABLE_MODEL", default=False)
+MAX_NEW_TOKENS = parse_int_env("TROLLSONA_MAX_NEW_TOKENS", 200, 32, 512)
 
 
 PERSONA_STYLES = {
@@ -323,40 +325,134 @@ def fallback_trollsona(
         "cringe_score": score,
         "cringe_score_label": cringe_label(score),
         "include_advice": include_advice,
+        "runtime": f"model_id={MODEL_ID}; fallback_model_id={FALLBACK_MODEL_ID}; model_enabled={MODEL_ENABLED}",
         "source": "deterministic_fallback",
         "fallback_reason": reason,
     }
 
 
 @lru_cache(maxsize=1)
-def load_model() -> tuple[Any | None, Any | None, str]:
+def load_model() -> tuple[Any | None, Any | None, str, str]:
     if not MODEL_ENABLED:
-        return None, None, "model disabled by TROLLSONA_ENABLE_MODEL"
+        return (
+            None,
+            None,
+            "model disabled by TROLLSONA_ENABLE_MODEL",
+            f"model_id={MODEL_ID}; fallback_model_id={FALLBACK_MODEL_ID}; device=disabled",
+        )
 
     try:
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
     except Exception as exc:
-        return None, None, f"model dependencies unavailable: {type(exc).__name__}: {exc}"
+        return (
+            None,
+            None,
+            f"model dependencies unavailable: {type(exc).__name__}: {exc}",
+            f"model_id={MODEL_ID}; fallback_model_id={FALLBACK_MODEL_ID}; device=unavailable",
+        )
 
-    try:
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+    failures: list[str] = []
+
+    def load_tokenizer(candidate_id: str) -> Any:
+        tokenizer = AutoTokenizer.from_pretrained(
+            candidate_id,
+            use_fast=True,
+            trust_remote_code=True,
+        )
         if tokenizer.pad_token_id is None and tokenizer.eos_token is not None:
             tokenizer.pad_token = tokenizer.eos_token
+        return tokenizer
+
+    def load_cuda_model(candidate_id: str) -> Any:
+        load_attempts = [
+            {
+                "trust_remote_code": True,
+                "device_map": "cuda",
+                "dtype": torch.float16,
+                "low_cpu_mem_usage": True,
+            },
+            {
+                "trust_remote_code": True,
+                "device_map": "cuda",
+                "torch_dtype": torch.float16,
+                "low_cpu_mem_usage": True,
+            },
+            {
+                "trust_remote_code": True,
+                "torch_dtype": torch.float16,
+                "low_cpu_mem_usage": True,
+            },
+        ]
+        last_error: Exception | None = None
+        for kwargs in load_attempts:
+            try:
+                model = AutoModelForCausalLM.from_pretrained(candidate_id, **kwargs)
+                if "device_map" not in kwargs:
+                    model = model.to("cuda")
+                return model
+            except Exception as exc:
+                last_error = exc
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError("CUDA model load failed without exception")
+
+    def load_cpu_model(candidate_id: str) -> Any:
         try:
-            model = AutoModelForCausalLM.from_pretrained(
-                MODEL_ID,
-                device_map="auto",
-                torch_dtype="auto",
+            return AutoModelForCausalLM.from_pretrained(
+                candidate_id,
+                trust_remote_code=True,
                 low_cpu_mem_usage=True,
             )
         except TypeError:
-            model = AutoModelForCausalLM.from_pretrained(MODEL_ID, device_map="auto")
-        model.eval()
-        torch.manual_seed(0)
-        return tokenizer, model, "model loaded"
-    except Exception as exc:
-        return None, None, f"model load failed: {type(exc).__name__}: {exc}"
+            return AutoModelForCausalLM.from_pretrained(candidate_id, trust_remote_code=True)
+
+    candidates = [
+        {"role": "primary", "model_id": MODEL_ID, "requires_cuda": True},
+        {"role": "fallback_model", "model_id": FALLBACK_MODEL_ID, "requires_cuda": False},
+    ]
+
+    seen_model_ids: set[str] = set()
+    for candidate in candidates:
+        candidate_id = str(candidate["model_id"]).strip()
+        if not candidate_id or candidate_id in seen_model_ids:
+            continue
+        seen_model_ids.add(candidate_id)
+        role = str(candidate["role"])
+        requires_cuda = bool(candidate["requires_cuda"])
+
+        if requires_cuda and not torch.cuda.is_available():
+            failures.append(f"{role} {candidate_id}: CUDA unavailable")
+            continue
+
+        try:
+            tokenizer = load_tokenizer(candidate_id)
+            if torch.cuda.is_available():
+                model = load_cuda_model(candidate_id)
+                device = "cuda"
+            else:
+                model = load_cpu_model(candidate_id)
+                device = "cpu"
+            model.eval()
+            torch.manual_seed(0)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(0)
+            fallback_note = "; ".join(failures)
+            status = "model loaded" if not fallback_note else f"model loaded after fallback: {fallback_note}"
+            runtime = (
+                f"model_id={candidate_id}; role={role}; device={device}; "
+                f"cuda_available={torch.cuda.is_available()}"
+            )
+            return tokenizer, model, status, runtime
+        except Exception as exc:
+            failures.append(f"{role} {candidate_id}: {type(exc).__name__}: {exc}")
+
+    failure_text = " | ".join(failures) if failures else "no model candidates configured"
+    runtime = (
+        f"model_id={MODEL_ID}; fallback_model_id={FALLBACK_MODEL_ID}; "
+        f"cuda_available={torch.cuda.is_available()}"
+    )
+    return None, None, f"model load failed: {failure_text}", runtime
 
 
 def format_generation_prompt(tokenizer: Any, prompt: str) -> str:
@@ -372,36 +468,122 @@ def format_generation_prompt(tokenizer: Any, prompt: str) -> str:
     return prompt
 
 
-def generate_with_model(prompt: str) -> tuple[str | None, str]:
-    tokenizer, model, status = load_model()
+def generation_temperature(spice: int) -> float:
+    return round(0.48 + (clamp_spice(spice) * 0.08), 2)
+
+
+def model_device(model: Any) -> Any:
+    target_device = getattr(model, "device", None)
+    if target_device is not None and str(target_device) != "meta":
+        return target_device
+    try:
+        return next(model.parameters()).device
+    except Exception:
+        return None
+
+
+def generate_with_model(prompt: str, spice: int) -> tuple[str | None, str, str]:
+    tokenizer, model, status, runtime = load_model()
     if tokenizer is None or model is None:
-        return None, status
+        return None, status, runtime
 
     try:
         import torch
 
         model_prompt = format_generation_prompt(tokenizer, prompt)
         inputs = tokenizer(model_prompt, return_tensors="pt", truncation=True, max_length=1536)
-        target_device = getattr(model, "device", None)
-        if target_device is not None and str(target_device) != "meta":
+        target_device = model_device(model)
+        if target_device is not None:
             inputs = {key: value.to(target_device) for key, value in inputs.items()}
+
+        seed = stable_int(prompt, str(spice), runtime) % (2**31)
+        torch.manual_seed(seed)
+        if hasattr(torch, "cuda") and torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
 
         with torch.no_grad():
             output_ids = model.generate(
                 **inputs,
                 max_new_tokens=MAX_NEW_TOKENS,
-                do_sample=False,
+                do_sample=True,
+                temperature=generation_temperature(spice),
                 num_beams=1,
+                repetition_penalty=1.1,
                 pad_token_id=tokenizer.eos_token_id,
             )
         prompt_len = inputs["input_ids"].shape[-1]
         generated_ids = output_ids[0][prompt_len:]
-        return tokenizer.decode(generated_ids, skip_special_tokens=True).strip(), status
+        return tokenizer.decode(generated_ids, skip_special_tokens=True).strip(), status, runtime
     except Exception as exc:
-        return None, f"model generation failed: {type(exc).__name__}: {exc}"
+        return None, f"model generation failed: {type(exc).__name__}: {exc}", runtime
 
 
-def parse_model_output(raw_text: str, score: int, include_advice: bool) -> dict[str, Any] | None:
+def parse_loose_model_fields(raw_text: str) -> dict[str, str]:
+    fields: dict[str, str] = {}
+    for field in ["trollsona_name", "troll_reply", "useful_advice", "cringe_score_label"]:
+        pattern = rf'"{field}"\s*:\s*"((?:\\.|[^"\\])*)'
+        match = re.search(pattern, raw_text or "", flags=re.DOTALL)
+        if not match:
+            continue
+        try:
+            value = json.loads(f'"{match.group(1)}"')
+        except json.JSONDecodeError:
+            value = match.group(1)
+        fields[field] = str(value)
+    return fields
+
+
+def coerce_model_result(
+    parsed: dict[str, Any],
+    fallback: dict[str, Any],
+    score: int,
+    include_advice: bool,
+    fallback_reason: str,
+    runtime: str,
+) -> dict[str, Any] | None:
+    result = dict(fallback)
+    field_limits = {
+        "trollsona_name": 80,
+        "troll_reply": 360,
+        "useful_advice": 280,
+        "cringe_score_label": 80,
+    }
+    used_fields: list[str] = []
+    missing_fields: list[str] = []
+
+    for field, limit in field_limits.items():
+        value = clean_text(parsed.get(field), limit)
+        if value and is_safe_text(value):
+            result[field] = value
+            used_fields.append(field)
+        else:
+            missing_fields.append(field)
+
+    if not used_fields:
+        return None
+
+    result["cringe_score"] = score
+    result["include_advice"] = include_advice
+    result["source"] = "transformers_model"
+    result["runtime"] = runtime
+    if missing_fields:
+        partial_reason = f"model output partial; fallback filled: {', '.join(missing_fields)}"
+        result["fallback_reason"] = (
+            f"{fallback_reason}; {partial_reason}" if fallback_reason else partial_reason
+        )
+    else:
+        result["fallback_reason"] = fallback_reason
+    return result
+
+
+def parse_model_output(
+    raw_text: str,
+    fallback: dict[str, Any],
+    score: int,
+    include_advice: bool,
+    fallback_reason: str,
+    runtime: str,
+) -> dict[str, Any] | None:
     decoder = json.JSONDecoder()
     parsed = None
     for match in re.finditer(r"\{", raw_text or ""):
@@ -414,26 +596,17 @@ def parse_model_output(raw_text: str, score: int, include_advice: bool) -> dict[
             break
 
     if parsed is None:
-        return None
+        parsed = parse_loose_model_fields(raw_text)
 
-    required_fields = ["trollsona_name", "troll_reply", "useful_advice", "cringe_score_label"]
-    if not all(isinstance(parsed.get(field), str) and parsed[field].strip() for field in required_fields):
-        return None
-
-    result = {
-        "trollsona_name": clean_text(parsed["trollsona_name"], 80),
-        "troll_reply": clean_text(parsed["troll_reply"], 360),
-        "useful_advice": clean_text(parsed["useful_advice"], 280),
-        "cringe_score": score,
-        "cringe_score_label": clean_text(parsed["cringe_score_label"], 80),
-        "include_advice": include_advice,
-        "source": "transformers_model",
-        "fallback_reason": "",
-    }
-    return result
+    return coerce_model_result(parsed, fallback, score, include_advice, fallback_reason, runtime)
 
 
-def repair_model_output(raw_text: str, fallback: dict[str, Any]) -> dict[str, Any] | None:
+def repair_model_output(
+    raw_text: str,
+    fallback: dict[str, Any],
+    fallback_reason: str,
+    runtime: str,
+) -> dict[str, Any] | None:
     repaired_reply = clean_text(raw_text, 360)
     repaired_reply = re.sub(r"^```(?:json)?|```$", "", repaired_reply).strip()
     if not repaired_reply or repaired_reply.startswith("{"):
@@ -444,7 +617,9 @@ def repair_model_output(raw_text: str, fallback: dict[str, Any]) -> dict[str, An
     result = dict(fallback)
     result["troll_reply"] = repaired_reply
     result["source"] = "transformers_model_repaired"
-    result["fallback_reason"] = "model output was not valid JSON and was repaired"
+    result["runtime"] = runtime
+    repair_reason = "model output was not valid JSON and was repaired"
+    result["fallback_reason"] = f"{fallback_reason}; {repair_reason}" if fallback_reason else repair_reason
     return result
 
 
@@ -501,11 +676,13 @@ def render_card(result: dict[str, Any]) -> str:
 
 def render_cursed_paperwork(result: dict[str, Any]) -> str:
     source = clean_text(result.get("source", "unknown"), 80)
+    runtime = clean_text(result.get("runtime", "runtime unavailable"), 260)
     fallback_reason = clean_text(result.get("fallback_reason", ""), 180)
     if not fallback_reason:
         fallback_reason = "No fallback note."
     return (
         f"**Source:** `{source}`  \n"
+        f"**Runtime:** `{runtime}`  \n"
         f"**Fallback note:** {fallback_reason}"
     )
 
@@ -548,17 +725,26 @@ def generate_trollsona(
 
     score = compute_cringe_score(profile, persona, spice)
     prompt = build_prompt(user_name, profile, persona, spice, include_advice, score)
-    raw_text, model_status = generate_with_model(prompt)
+    raw_text, model_status, runtime = generate_with_model(prompt, spice)
+    model_fallback_reason = "" if model_status == "model loaded" else model_status
 
     result = None
     if raw_text:
-        result = parse_model_output(raw_text, score, include_advice)
+        result = parse_model_output(
+            raw_text=raw_text,
+            fallback=fallback,
+            score=score,
+            include_advice=include_advice,
+            fallback_reason=model_fallback_reason,
+            runtime=runtime,
+        )
         if result is None:
-            result = repair_model_output(raw_text, fallback)
+            result = repair_model_output(raw_text, fallback, model_fallback_reason, runtime)
 
     if result is None:
         result = dict(fallback)
         result["fallback_reason"] = model_status
+        result["runtime"] = runtime
 
     result = safety_guard(result, fallback)
     return render_card(result), result, render_cursed_paperwork(result)
@@ -626,6 +812,7 @@ def build_demo() -> Any:
                     debug_output = gr.Markdown(
                         value=(
                             "**Source:** `not summoned`  \n"
+                            "**Runtime:** `not summoned`  \n"
                             "**Fallback note:** The dossier clerk is still asleep."
                         )
                     )

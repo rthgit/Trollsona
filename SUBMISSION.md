@@ -9,13 +9,13 @@
 | Space README links to repo | DONE | `README.md` contains repo URL | None |
 | Hugging Face Space deploy | DONE | https://huggingface.co/spaces/RthItalia/Trollsona | None |
 | Space link | DONE | `README.md` contains https://huggingface.co/spaces/RthItalia/Trollsona | None |
-| Space model variables | DONE | `.env.example` documents `TROLLSONA_ENABLE_MODEL=1`, `TROLLSONA_MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct` | Configure the same variables in Space settings if overriding defaults |
+| Space model variables | DONE | `.env.example` documents `TROLLSONA_ENABLE_MODEL=1`, `TROLLSONA_MODEL_ID=RthItalia/nano_compact_3b_qkvfp16`, `TROLLSONA_FALLBACK_MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct` | Configure the same variables in Space settings if overriding defaults |
 | Demo video | [DA COMPLETARE] | No video link/file present | Record 45-60s demo |
 | Social post | [DA COMPLETARE] | Draft below contains Space/GitHub URLs | Publish and add final link if required |
 | Gradio app | DONE | `app.py` defines `gr.Blocks` app | None |
-| Small model <=32B | DONE | Primary model id: `Qwen/Qwen2.5-0.5B-Instruct` | None |
-| Transformers model path | DONE | `TROLLSONA_ENABLE_MODEL=1` by default; `AutoModelForCausalLM.from_pretrained` implemented | None |
-| Deterministic fallback | DONE | Fallback remains available with `TROLLSONA_ENABLE_MODEL=0` or model failure | None |
+| Small model <=32B | DONE | Primary model id: `RthItalia/nano_compact_3b_qkvfp16`; fallback model id: `Qwen/Qwen2.5-0.5B-Instruct` | None |
+| Transformers model path | DONE | `TROLLSONA_ENABLE_MODEL=1` in Space variables; `AutoModelForCausalLM.from_pretrained(..., trust_remote_code=True)` implemented | None |
+| Deterministic fallback | DONE | Fallback remains available with `TROLLSONA_ENABLE_MODEL=0`, unavailable CUDA, model failure, or invalid model output | None |
 | Debug hidden by default | DONE | Source/fallback live in `See the cursed paperwork` | None |
 | No mandatory cloud API | DONE | Public HF model path and fallback require no app secrets | None |
 
@@ -39,7 +39,7 @@ Hook: I built a little ritual that summons the troll living behind your respecta
 
 Description: Trollsona turns a short confession into a theatrical alter-ego dossier: trollsona name, playful roast, one useful slap, and a goblin meter.
 
-Tech note: Built for Build Small Hackathon as a Gradio Hugging Face Space. The primary local Transformers model path stays under the `<=32B` small-model constraint; deterministic fallback remains as a reliability guard.
+Tech note: Built for Build Small Hackathon as a Gradio Hugging Face Space. The primary model is `RthItalia/nano_compact_3b_qkvfp16`, derived from `Qwen/Qwen2.5-3B-Instruct` and under the `<=32B` small-model constraint. A Qwen 0.5B model and deterministic fallback remain as reliability guards.
 
 Links:
 
@@ -53,7 +53,7 @@ CTA: Try it, summon your menace, and share the dossier.
 | test | command/action | expected result | status |
 |---|---|---|---|
 | Python compile | `python -B -m py_compile app.py` | no syntax errors | DONE |
-| Model path implemented | inspect `app.py` | `TROLLSONA_ENABLE_MODEL` defaults to `1`; `from_pretrained` path present | DONE |
+| Model path implemented | inspect `app.py` | Space sets `TROLLSONA_ENABLE_MODEL=1`; `from_pretrained(..., trust_remote_code=True)` path present | DONE |
 | Deterministic fallback | run `generate_trollsona(...)` twice | identical structured output | DONE |
 | Local Gradio launch | `python app.py` | app opens on `127.0.0.1:7860` | DONE in local QA |
 | Input-full generation | fill name + lore + summon | result card renders | DONE in local QA |
