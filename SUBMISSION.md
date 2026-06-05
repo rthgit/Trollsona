@@ -7,10 +7,10 @@
 | Public GitHub repo | DONE | https://github.com/rthgit/Trollsona | None |
 | Codex-attributed commits | DONE | `0428072`; final docs commit in latest Git history after this pass | None |
 | Space README links to repo | DONE | `README.md` contains repo URL | None |
-| Hugging Face Space deploy | [DA COMPLETARE] | No Space URL present | Create Space and push/upload files |
-| Space link | [DA COMPLETARE] | README placeholder | Replace after deploy |
+| Hugging Face Space deploy | DONE | https://huggingface.co/spaces/RthItalia/Trollsona | None |
+| Space link | DONE | `README.md` contains https://huggingface.co/spaces/RthItalia/Trollsona | None |
 | Demo video | [DA COMPLETARE] | No video link/file present | Record 45-60s demo |
-| Social post | [DA COMPLETARE] | Draft below | Publish and add final link if required |
+| Social post | [DA COMPLETARE] | Draft below contains Space/GitHub URLs | Publish and add final link if required |
 | Gradio app | DONE | `app.py` defines `gr.Blocks` app | None |
 | Small model <=32B | DONE | Optional model id: `Qwen/Qwen2.5-3B-Instruct` | None |
 | Deterministic fallback | DONE | Local QA: repeated generation matched | None |
@@ -41,7 +41,7 @@ Tech note: Built for Build Small Hackathon as a Gradio Hugging Face Space. Defau
 
 Links:
 
-- Space: [DA COMPLETARE]
+- Space: https://huggingface.co/spaces/RthItalia/Trollsona
 - GitHub: https://github.com/rthgit/Trollsona
 
 CTA: Try it, summon your menace, and share the dossier.
@@ -59,8 +59,8 @@ CTA: Try it, summon your menace, and share the dossier.
 | Visual contrast | inspect input/dropdown/checkbox/CTA/card | readable UI | DONE |
 | Git status | `git status --short --ignored` | only ignored `.env` / QA screenshot remain | DONE |
 | README repo link | inspect README | GitHub URL present | DONE |
-| Space build | Hugging Face build logs | Space starts successfully | [DA COMPLETARE] |
-| Browser test on Space | open public Space and summon | card renders on hosted Space | [DA COMPLETARE] |
+| Space build | Hugging Face runtime API | `stage=RUNNING`, `requested=cpu-basic` | DONE |
+| Browser test on Space | Playwright on public Space | card renders; debug source/fallback hidden until accordion opens | DONE |
 
 ## Final Ship Plan
 
@@ -68,8 +68,8 @@ CTA: Try it, summon your menace, and share the dossier.
 |---|---|---|---|---|
 | 1 | Codex | Final README and submission docs | Docs committed | P0 |
 | 2 | Codex/User | GitHub push | `rthgit/Trollsona` contains latest commits | P0 |
-| 3 | User | Hugging Face Space | Public Space URL opens app | P0 |
-| 4 | User | README Space link | `[DA COMPLETARE]` replaced with Space URL | P0 |
+| 3 | Codex | Hugging Face Space | Public Space URL opens app | P0 |
+| 4 | Codex | README Space link | Space URL is present in `README.md` | P0 |
 | 5 | User | Demo video | 45-60s video available | P1 |
 | 6 | User | Social post | Published post with links | P1 |
 | 7 | User | Submission form | All required URLs submitted | P0 |

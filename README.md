@@ -1,8 +1,8 @@
 ---
 title: Trollsona
 emoji: 🧌
-colorFrom: orange
-colorTo: yellow
+colorFrom: yellow
+colorTo: red
 sdk: gradio
 sdk_version: 5.50.0
 app_file: app.py
@@ -19,7 +19,7 @@ pinned: false
 
 **GitHub repo:** https://github.com/rthgit/Trollsona
 
-**Hugging Face Space:** [DA COMPLETARE]
+**Hugging Face Space:** https://huggingface.co/spaces/RthItalia/Trollsona
 
 Trollsona is a playful Gradio experience that turns a short user confession into a theatrical troll alter ego. The app returns a dossier-style result card with a trollsona name, a warm roast, one useful slap, and a deterministic goblin meter.
 
@@ -120,7 +120,7 @@ Gradio
 Space URL:
 
 ```text
-[DA COMPLETARE]
+https://huggingface.co/spaces/RthItalia/Trollsona
 ```
 
 ## Safety
@@ -152,14 +152,14 @@ If generated model output fails the safety guard, the app replaces it with a saf
 
 - Public GitHub repo: https://github.com/rthgit/Trollsona
 - Codex-attributed polish commit: `0428072`
-- Final documentation commit: latest Git history after this documentation pass
+- Deploy documentation commit: `Add deployed Space link for Trollsona submission`
 - Space README repo link: present
 - Demo video: [DA COMPLETARE]
 - Social post: [DA COMPLETARE]
 
 ## Known Limits
 
-- Public Space link: [DA COMPLETARE]
+- Public Space link: https://huggingface.co/spaces/RthItalia/Trollsona
 - Demo video: [DA COMPLETARE]
 - Social post URL: [DA COMPLETARE]
-- Exact optional-model behavior across hardware: [AMBIGUO], because Space hardware/runtime are not specified
+- Exact optional-model behavior on upgraded Space hardware: [AMBIGUO], because the optional Transformers path is disabled by default and has not been tested on upgraded hardware
